@@ -1,14 +1,31 @@
 package com.luismendes070.agelimit;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+// import com.google.android.gms.games.Games;
+
+
 import java.util.Calendar;// ChatGPT
 
-import android.os.Bundle;
+// import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.appcompat.app.AppCompatActivity;
+// import androidx.appcompat.app.AppCompatActivity;
 
-import android.view.View;
+// import android.view.View;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -19,11 +36,14 @@ import com.luismendes070.agelimit.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+// import android.widget.Button;
+// import android.widget.EditText;
+// import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleSignInClient googleSignInClient;
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
@@ -67,6 +87,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // ChatGPT
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        Button signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(view -> signIn());
 
     } // end onCreate method
 
@@ -120,4 +147,36 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+    // ChatGPT
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+            if (account != null) {
+                verifyAgeAndProceed(account);
+            } else {
+                Toast.makeText(this, "Sign-in failed", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void verifyAgeAndProceed(GoogleSignInAccount account) {
+        // Simulate fetching the date of birth
+        String dob = "2000-01-01"; // Replace this with actual DOB retrieval
+        int age = calculateAge(dob);
+
+        if (age < 18) {
+            Toast.makeText(this, "You must be 18 or older to use this feature.", Toast.LENGTH_SHORT).show();
+        } else {
+            // Proceed with accessing Play Games Services
+            Toast.makeText(this, "Access granted!", Toast.LENGTH_SHORT).show();
+            // Load your game features or services
+        }
+    }
+
+
+
 }
